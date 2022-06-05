@@ -1,4 +1,4 @@
-import { Button, Col, Menu, Row, Alert, Select } from "antd";
+import { Button, Col, Menu, Row, Alert, Select, notification } from "antd";
 import "antd/dist/antd.css";
 import {
   useBalance,
@@ -37,6 +37,9 @@ import { Transactor, Web3ModalSetup } from "./helpers";
 import { Home, Hints, Subgraph, CreateTransaction, Transactions } from "./views";
 import { useStaticJsonRPC, useLocalStorage } from "./hooks";
 
+import { Waku, WakuMessage, discovery, getPredefinedBootstrapNodes, utils } from "js-waku";
+import protons from "protons";
+
 const { Option } = Select;
 const { ethers } = require("ethers");
 
@@ -50,6 +53,25 @@ const USE_BURNER_WALLET = true; // toggle burner wallet feature
 const USE_NETWORK_SELECTOR = false;
 
 const web3Modal = Web3ModalSetup();
+
+const proto = protons(`
+  message WakuTxMessage {
+    required uint64 chainId = 1;
+    required string address = 2;
+    required uint64 nonce = 3;
+    required string to = 4;
+    required string amount = 5;
+    required string data = 6;
+    required string hash = 7;
+    repeated string signatures = 8;
+    repeated string signers = 9;
+    required uint64 timestamp = 10;
+    required uint32 done = 11;
+  }
+`);
+
+const CONTENT_TOPIC = "/rugged-multisig/1/1.1/tx-history/proto";
+
 // 🛰 providers
 const providers = [
   "https://eth-mainnet.gateway.pokt.network/v1/lb/611156b4a585a20035148406",
@@ -65,6 +87,9 @@ function App(props) {
   const [injectedProvider, setInjectedProvider] = useState();
   const [address, setAddress] = useState();
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
+  const [waku, setWaku] = useState(undefined);
+  const [transactions, setTransactions] = useState([]);
+  const [wakuStatus, setWakuStatus] = useState("None");
   const location = useLocation();
 
   const cachedNetwork = window.localStorage.getItem("network");
@@ -152,6 +177,91 @@ function App(props) {
   const [currentMultiSigAddress, setCurrentMultiSigAddress] = useState();
 
   const [importedMultiSigs] = useLocalStorage("importedMultiSigs");
+
+  const decodeWakuMessage = useCallback(wakuMessage => {
+    if (!wakuMessage.payload) return;
+    const decodedTx = proto.WakuTxMessage.decode(wakuMessage.payload);
+    return decodedTx;
+  }, []);
+
+  const wakuLightPush = async message => {
+    const encodedMessage = proto.WakuTxMessage.encode(message);
+    const wakuMessage = await WakuMessage.fromBytes(encodedMessage, CONTENT_TOPIC, {
+      symKey: utils.hexToBytes(utils.keccak256Buf(Buffer.from(CONTENT_TOPIC, "utf-8"))),
+    });
+    const resp = await waku.lightPush.push(wakuMessage);
+    if (!resp?.isSuccess) {
+      notification.open({
+        message: "🛑 Error Proposing Transaction To Waku Network",
+        description: <>{message.toString()} (check console)</>,
+      });
+    }
+  };
+
+  React.useEffect(() => {
+    if (!waku) return;
+    if (!currentMultiSigAddress) return;
+    // We do not handle disconnection/re-connection in this example
+    if (wakuStatus === "Connected") return;
+
+    waku.waitForRemotePeer().then(() => {
+      // We are now connected to a store node
+      setWakuStatus("Connected");
+    });
+  }, [waku, wakuStatus, currentMultiSigAddress]);
+
+  React.useEffect(() => {
+    if (!currentMultiSigAddress) return;
+    if (wakuStatus !== "None") return;
+
+    setWakuStatus("Starting");
+
+    Waku.create({
+      bootstrap: {
+        peers: getPredefinedBootstrapNodes(discovery.predefined.Fleet.Prod),
+      },
+      decryptionKeys: [utils.hexToBytes(utils.keccak256Buf(Buffer.from(CONTENT_TOPIC, "utf-8")))],
+    }).then(waku => {
+      setWaku(waku);
+      setWakuStatus("Connecting");
+    });
+  }, [waku, wakuStatus, currentMultiSigAddress]);
+
+  const addNewTransaction = useCallback(
+    wakuMessage => {
+      const newTx = decodeWakuMessage(wakuMessage);
+      if (newTx) setTransactions(txs => [...txs, newTx]);
+    },
+    [decodeWakuMessage],
+  );
+
+  React.useEffect(() => {
+    if (!waku) return;
+
+    // Pass the content topic to only process messages related to your dApp
+
+    waku.relay.addObserver(addNewTransaction, [CONTENT_TOPIC]);
+
+    if (wakuStatus === "Connected") {
+      const processWakuStoreMessages = retrievedMessages => {
+        const retrievedTxs = retrievedMessages.map(decodeWakuMessage).filter(Boolean);
+        console.log("==> retrievedMessages", retrievedTxs);
+        setTransactions(txs => [...txs, ...retrievedTxs]);
+      };
+      waku.store.queryHistory([CONTENT_TOPIC], { callback: processWakuStoreMessages }).catch(e => {
+        console.log("==> Failed to retrieve messages", e);
+        notification.open({
+          message: "🛑 Failed to retrieve messages",
+          description: <>{e}</>,
+        });
+      });
+    }
+
+    // `cleanUp` is called when the component is unmounted, see ReactJS doc.
+    return function cleanUp() {
+      waku.relay.deleteObserver(addNewTransaction, [CONTENT_TOPIC]);
+    };
+  }, [waku, wakuStatus]);
 
   useEffect(() => {
     if (address) {
@@ -298,8 +408,6 @@ function App(props) {
     setCurrentMultiSigAddress(value);
   };
 
-  console.log("currentMultiSigAddress:", currentMultiSigAddress);
-
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
 
   const selectNetworkOptions = [];
@@ -394,6 +502,7 @@ function App(props) {
               ))}
             </Select>
             {networkSelect}
+            <Button style={{ marginLeft: 10 }}>waku:{wakuStatus}</Button>
           </div>
           <ImportMultiSigModal
             mainnetProvider={mainnetProvider}
@@ -472,6 +581,7 @@ function App(props) {
             nonce={nonce}
             blockExplorer={blockExplorer}
             signaturesRequired={signaturesRequired}
+            wakuLightPush={wakuLightPush}
           />
         </Route>
         <Route path="/pool">
@@ -488,7 +598,10 @@ function App(props) {
             readContracts={readContracts}
             blockExplorer={blockExplorer}
             nonce={nonce}
+            wakuLightPush={wakuLightPush}
+            contractAddress={currentMultiSigAddress}
             signaturesRequired={signaturesRequired}
+            wakuTransactions={transactions}
           />
         </Route>
         <Route exact path="/debug">

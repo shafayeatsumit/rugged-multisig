@@ -2680,6 +2680,11 @@
   resolved "https://registry.yarnpkg.com/@metamask/safe-event-emitter/-/safe-event-emitter-2.0.0.tgz#af577b477c683fad17c619a78208cede06f9605c"
   integrity sha512-/kSXhY692qiV1MXu6EeOZvg5nECLclxNXcKCxJ3cXQgYuRymRHpdx/t7JXfsK+JLjwA1e1c1/SBrlQYpusC29Q==
 
+"@multiformats/base-x@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@multiformats/base-x/-/base-x-4.0.1.tgz#95ff0fa58711789d53aefb2590a8b7a4e715d121"
+  integrity sha512-eMk0b9ReBbV23xXU693TAIrLyeO5iTgBZGSJfpqriG8UkYvr/hC9u9pyMlAakDNHWmbhMZCDs6KQO0jzKD8OTw==
+
 "@n1ru4l/push-pull-async-iterable-iterator@^3.0.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@n1ru4l/push-pull-async-iterable-iterator/-/push-pull-async-iterable-iterator-3.1.0.tgz#be450c97d1c7cd6af1a992d53232704454345df9"
@@ -14055,10 +14060,10 @@ js-tokens@^3.0.2:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-3.0.2.tgz#9866df395102130e38f7f996bceb65443209c25b"
   integrity sha1-mGbfOVECEw449/mWvOtlRDIJwls=
 
-js-waku@^0.24.0:
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/js-waku/-/js-waku-0.24.0.tgz#509dc5e2fa30a4b1476b79665594d7b149717d4c"
-  integrity sha512-8l7/WuadaaGy6XmVKutZpJ61JohbBe8WamJUtNiTd8WdxhBuz/rXh5RUiD8mjiiG8kEzQ+3+E68rvIpb/+BbXw==
+js-waku@0.22.0:
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/js-waku/-/js-waku-0.22.0.tgz#71f19cc433ec4f7b909c66c9809f39334f1666a4"
+  integrity sha512-4aMOJI6HKSaJ4eLfanbD1CDifwUgCPfcIDnIrt96SJA5A3nf9VXFZUmR1huwv07JithmkP9orXNGb6u8KdGcrg==
   dependencies:
     "@chainsafe/libp2p-noise" "^5.0.0"
     "@ethersproject/rlp" "^5.5.0"
@@ -14068,23 +14073,16 @@ js-waku@^0.24.0:
     hi-base32 "^0.5.1"
     it-concat "^2.0.0"
     it-length-prefixed "^5.0.2"
-    it-pipe "^1.1.0"
     js-sha3 "^0.8.0"
     libp2p "^0.36.2"
     libp2p-bootstrap "^0.14.0"
-    libp2p-crypto "^0.21.2"
     libp2p-gossipsub "0.13.0"
-    libp2p-interfaces "^4.0.6"
     libp2p-mplex "^0.10.4"
     libp2p-websockets "^0.16.1"
-    long "^4.0.0"
     multiaddr "^10.0.1"
-    multiformats "^9.6.5"
-    peer-id "^0.16.0"
+    multihashes "^4.0.3"
     protobufjs "^6.8.8"
-    uint8arrays "^3.0.0"
     uuid "^8.3.2"
-    varint "^6.0.0"
 
 js-yaml@3.13.1:
   version "3.13.1"
@@ -14854,7 +14852,7 @@ libp2p-gossipsub@0.13.0:
     protobufjs "^6.11.2"
     uint8arrays "^3.0.0"
 
-libp2p-interfaces@^4.0.0, libp2p-interfaces@^4.0.4, libp2p-interfaces@^4.0.6:
+libp2p-interfaces@^4.0.0, libp2p-interfaces@^4.0.4:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/libp2p-interfaces/-/libp2p-interfaces-4.0.6.tgz#462062e04a680703bca18eb1d7a9c963a39344d1"
   integrity sha512-3KjzNEIWhi+VoOamLvgKKUE/xqwxSw/JYqsBnfMhAWVRvRtosROtVT03wci2XbuuowCYw+/hEX1xKJIR1w5n0A==
@@ -16061,6 +16059,13 @@ multibase@^1.0.0, multibase@^1.0.1:
     base-x "^3.0.8"
     buffer "^5.5.0"
 
+multibase@^4.0.1:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/multibase/-/multibase-4.0.6.tgz#6e624341483d6123ca1ede956208cb821b440559"
+  integrity sha512-x23pDe5+svdLz/k5JPGCVdfn7Q5mZVMBETiC+ORfO+sor9Sgs0smJzAjfTbM5tckeCqnaUuMYoz+k3RXMmJClQ==
+  dependencies:
+    "@multiformats/base-x" "^4.0.1"
+
 multibase@~0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/multibase/-/multibase-0.6.1.tgz#b76df6298536cc17b9f6a6db53ec88f85f8cc12b"
@@ -16097,7 +16102,7 @@ multicodec@^1.0.0, multicodec@^1.0.1:
     buffer "^5.6.0"
     varint "^5.0.0"
 
-multiformats@^9.0.0, multiformats@^9.1.2, multiformats@^9.6.5:
+multiformats@^9.0.0, multiformats@^9.1.2:
   version "9.6.5"
   resolved "https://registry.yarnpkg.com/multiformats/-/multiformats-9.6.5.tgz#f2d894a26664b454a90abf5a8911b7e39195db80"
   integrity sha512-vMwf/FUO+qAPvl3vlSZEgEVFY/AxeZq5yg761ScF3CZsXgmTi/HGkicUiNN0CI4PW8FiY2P0OLklOcmQjdQJhw==
@@ -16124,6 +16129,15 @@ multihashes@^1.0.1:
     buffer "^5.6.0"
     multibase "^1.0.1"
     varint "^5.0.0"
+
+multihashes@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/multihashes/-/multihashes-4.0.3.tgz#426610539cd2551edbf533adeac4c06b3b90fb05"
+  integrity sha512-0AhMH7Iu95XjDLxIeuCOOE4t9+vQZsACyKZ9Fxw2pcsRmlX4iCn1mby0hS0bb+nQOVpdQYWPpnyusw4da5RPhA==
+  dependencies:
+    multibase "^4.0.1"
+    uint8arrays "^3.0.0"
+    varint "^5.0.2"
 
 multihashing-async@~0.5.1:
   version "0.5.2"
@@ -22768,7 +22782,7 @@ value-or-function@^3.0.0:
   resolved "https://registry.yarnpkg.com/value-or-function/-/value-or-function-3.0.0.tgz#1c243a50b595c1be54a754bfece8563b9ff8d813"
   integrity sha1-HCQ6ULWVwb5Up1S/7OhWO5/42BM=
 
-varint@^5.0.0, varint@~5.0.0:
+varint@^5.0.0, varint@^5.0.2, varint@~5.0.0:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/varint/-/varint-5.0.2.tgz#5b47f8a947eb668b848e034dcfa87d0ff8a7f7a4"
   integrity sha512-lKxKYG6H03yCZUpAGOPOsMcGxd1RHCu1iKvEHYDPmTyq2HueGhD73ssNBqqQWfvYs04G9iUFRvmAVLW20Jw6ow==
