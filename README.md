@@ -61,8 +61,8 @@ yarn deploy
 
 # 📣 Shout Out:
 
-This project is built as a part of ethereum [Ethereum Speed Run](https://medium.com/@austin_48503/%EF%B8%8Fethereum-dev-speed-run-bd72bcba6a4c) program.
-Thse project is built on top of [Scaffold-Eth](https://github.com/scaffold-eth/scaffold-eth). This boilerplate helps developer to quickly experiment with Solidity using a frontend that adapts to your smart contract.
+- Thse project is built on top of [Scaffold-Eth](https://github.com/scaffold-eth/scaffold-eth). This boilerplate helps developer to quickly experiment with Solidity using a frontend that adapts to your smart contract.
+- 🙏 [dec3ntraliz3d](https://github.com/dec3ntraliz3d), [Daniel]('https://github.com/danielkhoo'), [Soptq]('https://github.com/Soptq'), [Steven Slade]('https://github.com/stevenpslade'), [Austin Griffith]('https://github.com/austintgriffith').
 
 # 💌 P.S.
 
