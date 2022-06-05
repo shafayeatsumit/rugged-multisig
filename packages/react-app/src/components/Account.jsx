@@ -57,7 +57,7 @@ export default function Account({
   isContract,
 }) {
   const { currentTheme } = useThemeSwitcher();
-
+  console.log("address ====>", address);
   const modalButtons = [];
   if (web3Modal) {
     if (web3Modal.cachedProvider) {
