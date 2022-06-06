@@ -31,6 +31,7 @@ export default function Transactions({
 }) {
   const filterAndProcessTx = receivedTransactions => {
     // filter for the current contract
+    console.log("current multisig", contractAddress, wakuTransactions);
     let txList = receivedTransactions.filter(tx => tx.address === contractAddress);
     // filter out the duplicate Tx keep the latest.
     let memTransactions = [];

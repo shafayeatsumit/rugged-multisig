@@ -14,6 +14,15 @@ This indexer is a centralized piece, critical to the wallet functionality. As of
 
 Replacing the indexer by the decentralized Waku network would mitigate such risks.
 
+## ✨ Features
+
+- Create wallet.
+- Import existing wallet.
+- Propose basic transactions with the frontend that sends them to the backend.
+- “vote” on the transaction as other signers.
+- Add/remove new signer.
+- Execute transaction as an active signer.
+
 ### 🛠 Waku Implementation Detail
 
 This project integrates Waku to multisig wallet for initiating multi-party multi-signature transactions.
