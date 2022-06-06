@@ -69,19 +69,19 @@ describe("MultiSigWallet Test", () => {
   });
 
   describe("Testing MultiSigWallet functionality", () => {
-    it("Adding a new signer", async () => {
+    it("Adding and Removing signer", async () => {
       const newSigner = addr1.address;
 
       const nonce = await MultiSigWallet.nonce();
       const to = MultiSigWallet.address;
       const value = 0;
 
-      const callData = MultiSigWallet.interface.encodeFunctionData(
-        "addSigner",
-        [newSigner, 1]
-      );
+      let callData = MultiSigWallet.interface.encodeFunctionData("addSigner", [
+        newSigner,
+        2,
+      ]);
 
-      const hash = await MultiSigWallet.getTransactionHash(
+      let hash = await MultiSigWallet.getTransactionHash(
         nonce,
         to,
         value,
@@ -100,6 +100,40 @@ describe("MultiSigWallet Test", () => {
       await MultiSigWallet.executeTransaction(to, value, callData, [signature]);
 
       expect(await MultiSigWallet.isOwner(newSigner)).to.equal(true);
+      expect(await MultiSigWallet.signaturesRequired()).to.equal(2);
+
+      callData = MultiSigWallet.interface.encodeFunctionData("removeSigner", [
+        newSigner,
+        1,
+      ]);
+
+      hash = await MultiSigWallet.getTransactionHash(
+        nonce + 1,
+        to,
+        value,
+        callData
+      );
+
+      const signatureOld = await owner.provider.send("eth_sign", [
+        owner.address,
+        hash,
+      ]);
+      const signatureNew = await owner.provider.send("eth_sign", [
+        newSigner,
+        hash,
+      ]);
+      expect(await MultiSigWallet.recover(hash, signatureOld)).to.equal(
+        owner.address
+      );
+      expect(await MultiSigWallet.recover(hash, signatureNew)).to.equal(
+        newSigner
+      );
+      await MultiSigWallet.executeTransaction(to, value, callData, [
+        signatureNew,
+        signatureOld,
+      ]);
+      expect(await MultiSigWallet.isOwner(newSigner)).to.equal(false);
+      expect(await MultiSigWallet.signaturesRequired()).to.equal(1);
     });
 
     // I think this is a bug in MultiSigWallet which should be fixed, same for addSigner/removeSigner where newSignaturesRequired is used

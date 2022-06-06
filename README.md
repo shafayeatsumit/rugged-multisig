@@ -59,6 +59,21 @@ yarn deploy
 
 📱 Open http://localhost:3000 to see the app
 
+# 🧪 Test Coverage:
+
+```
+----------------------|----------|----------|----------|----------|----------------|
+File                  |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+----------------------|----------|----------|----------|----------|----------------|
+ contracts/           |    95.31 |       50 |      100 |    95.77 |                |
+  MultiSigFactory.sol |      100 |       50 |      100 |      100 |                |
+  MultiSigWallet.sol  |    94.23 |       50 |      100 |    94.83 |    116,117,121 |
+  TestERC20Token.sol  |      100 |      100 |      100 |      100 |                |
+----------------------|----------|----------|----------|----------|----------------|
+All files             |    95.31 |       50 |      100 |    95.77 |                |
+----------------------|----------|----------|----------|----------|----------------|
+```
+
 # 📣 Shout Out:
 
 - Thse project is built on top of [Scaffold-Eth](https://github.com/scaffold-eth/scaffold-eth). This boilerplate helps developer to quickly experiment with Solidity using a frontend that adapts to your smart contract.
