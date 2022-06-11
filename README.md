@@ -6,6 +6,8 @@ A minimal clone of [gnosis-safe](https://gnosis-safe.io/) with one key differenc
 
 The purpose of multisig wallets is to increase security by requiring multiple parties to agree on transactions before execution. Transactions can be executed only when confirmed by a predefined number of owners
 
+# 🎬 [Demo Video](https://www.loom.com/share/5446aa4fc81a45f2b9de0e1a036ac722)
+
 ## 💡what problem does it solve?
 
 Typical multi-sig wallets are able to achieve gas-less signatures by running a centralized indexer, aka transaction history service.
